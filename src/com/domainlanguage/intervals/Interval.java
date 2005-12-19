@@ -16,51 +16,39 @@ import com.domainlanguage.util.*;
  * definition of "interval". For a simple explanation, see
  * http://en.wikipedia.org/wiki/Interval_(mathematics)
  * 
- * Interval (and its "ConcreteInterval" subclass) can be used for any objects
- * that have a natural ordering reflected by implementing the Comparable
- * interface. For example, Integer implements Comparable, so if you want to
- * check if an Integer is within a range, make an Interval. Any class of yours
- * which implements Comparable can have intervals defined this way.
+ * Interval can be used for any objects that have a natural ordering reflected
+ * by implementing the Comparable interface. For example, Integer implements
+ * Comparable, so if you want to check if an Integer is within a range, make an
+ * Interval. Any class of yours which implements Comparable can have intervals
+ * defined this way.
  */
-public abstract class Interval implements Comparable, Serializable {
+public class Interval implements Comparable, Serializable {
+    protected Comparable lowerLimit;
+    protected boolean includesLowerLimit;
+    protected Comparable upperLimit;
+    protected boolean includesUpperLimit;
 
     public static Interval closed(Comparable lower, Comparable upper) {
-        return new ConcreteInterval(lower, true, upper, true);
+        return new Interval(lower, true, upper, true);
     }
 
     public static Interval open(Comparable lower, Comparable upper) {
-        return new ConcreteInterval(lower, false, upper, false);
+        return new Interval(lower, false, upper, false);
     }
 
-    public static Interval over(Comparable lower, boolean lowerIncluded, Comparable upper, boolean upperIncluded) {
-        return new ConcreteInterval(lower, lowerIncluded, upper, upperIncluded);
+    public static Interval over(Comparable lower, boolean lowerIncluded,
+            Comparable upper, boolean upperIncluded) {
+        return new Interval(lower, lowerIncluded, upper, upperIncluded);
     }
 
-    public abstract Comparable upperLimit();
-
-    //Warning: This method should generally be used for display
-    //purposes and interactions with closely coupled classes.
-    //Look for (or add) other methods to do computations.
-
-    public abstract Comparable lowerLimit();
-
-    //Warning: This method should generally be used for display
-    //purposes and interactions with closely coupled classes.
-    //Look for (or add) other methods to do computations.
-
-    public abstract boolean includesLowerLimit();
-
-    //Warning: This method should generally be used for display
-    //purposes and interactions with closely coupled classes.
-    //Look for (or add) other methods to do computations.
-
-    public abstract boolean includesUpperLimit();
-
-    //Warning: This method should generally be used for display
-    //purposes and interactions with closely coupled classes.
-    //Look for (or add) other methods to do computations.
-
-    public abstract Interval newOfSameType(Comparable lower, boolean isLowerClosed, Comparable upper, boolean isUpperClosed);
+    public Interval(Comparable lower, boolean lowerIncluded, Comparable upper,
+            boolean upperIncluded) {
+        assert lower.compareTo(upper) <= 0;
+        lowerLimit = lower;
+        includesLowerLimit = lowerIncluded;
+        upperLimit = upper;
+        includesUpperLimit = upperIncluded;
+    }
 
     public Interval emptyOfSameType() {
         return newOfSameType(lowerLimit(), false, lowerLimit(), false);
@@ -72,9 +60,11 @@ public abstract class Interval implements Comparable, Serializable {
 
     public boolean covers(Interval other) {
         int lowerComparison = lowerLimit().compareTo(other.lowerLimit());
-        boolean lowerPass = this.includes(other.lowerLimit()) || (lowerComparison == 0 && !other.includesLowerLimit());
+        boolean lowerPass = this.includes(other.lowerLimit())
+                || (lowerComparison == 0 && !other.includesLowerLimit());
         int upperComparison = upperLimit().compareTo(other.upperLimit());
-        boolean upperPass = this.includes(other.upperLimit()) || (upperComparison == 0 && !other.includesUpperLimit());
+        boolean upperPass = this.includes(other.upperLimit())
+                || (upperComparison == 0 && !other.includesUpperLimit());
         return lowerPass && upperPass;
     }
 
@@ -87,13 +77,13 @@ public abstract class Interval implements Comparable, Serializable {
     }
 
     public boolean isEmpty() {
-        //TODO: Consider explicit empty interval
-        //A 'degenerate' interval is an empty set, {}.
+        // TODO: Consider explicit empty interval
+        // A 'degenerate' interval is an empty set, {}.
         return isOpen() && upperLimit().equals(lowerLimit());
     }
 
     public boolean isSingleElement() {
-        //An interval containing a single element, {a}.
+        // An interval containing a single element, {a}.
         return upperLimit().equals(lowerLimit()) && !isEmpty();
     }
 
@@ -206,12 +196,14 @@ public abstract class Interval implements Comparable, Serializable {
     }
 
     public boolean intersects(Interval other) {
-        int comparison = greaterOfLowerLimits(other).compareTo(lesserOfUpperLimits(other));
+        int comparison = greaterOfLowerLimits(other).compareTo(
+                lesserOfUpperLimits(other));
         if (comparison < 0)
             return true;
         if (comparison > 0)
             return false;
-        return greaterOfLowerIncludedInIntersection(other) && lesserOfUpperIncludedInIntersection(other);
+        return greaterOfLowerIncludedInIntersection(other)
+                && lesserOfUpperIncludedInIntersection(other);
     }
 
     public Interval intersect(Interval other) {
@@ -219,14 +211,19 @@ public abstract class Interval implements Comparable, Serializable {
         Comparable intersectUpperBound = lesserOfUpperLimits(other);
         if (intersectLowerBound.compareTo(intersectUpperBound) > 0)
             return emptyOfSameType();
-        return newOfSameType(intersectLowerBound, greaterOfLowerIncludedInIntersection(other), intersectUpperBound, lesserOfUpperIncludedInIntersection(other));
+        return newOfSameType(intersectLowerBound,
+                greaterOfLowerIncludedInIntersection(other),
+                intersectUpperBound, lesserOfUpperIncludedInIntersection(other));
     }
 
     public Interval gap(Interval other) {
         if (this.intersects(other))
             return this.emptyOfSameType();
 
-        return newOfSameType(lesserOfUpperLimits(other), !lesserOfUpperIncludedInUnion(other), greaterOfLowerLimits(other), !greaterOfLowerIncludedInUnion(other));
+        return newOfSameType(lesserOfUpperLimits(other),
+                !lesserOfUpperIncludedInUnion(other),
+                greaterOfLowerLimits(other),
+                !greaterOfLowerIncludedInUnion(other));
     }
 
     /** see: http://en.wikipedia.org/wiki/Set_theoretic_complement */
@@ -248,17 +245,54 @@ public abstract class Interval implements Comparable, Serializable {
     private Interval leftComplementRelativeTo(Interval other) {
         if (this.includes(lesserOfLowerLimits(other)))
             return null;
-        if (lowerLimit().equals(other.lowerLimit()) && !other.includesLowerLimit())
+        if (lowerLimit().equals(other.lowerLimit())
+                && !other.includesLowerLimit())
             return null;
-        return newOfSameType(other.lowerLimit(), other.includesLowerLimit(), this.lowerLimit(), !this.includesLowerLimit());
+        return newOfSameType(other.lowerLimit(), other.includesLowerLimit(),
+                this.lowerLimit(), !this.includesLowerLimit());
     }
 
     private Interval rightComplementRelativeTo(Interval other) {
         if (this.includes(greaterOfUpperLimits(other)))
             return null;
-        if (upperLimit().equals(other.upperLimit()) && !other.includesUpperLimit())
+        if (upperLimit().equals(other.upperLimit())
+                && !other.includesUpperLimit())
             return null;
-        return newOfSameType(this.upperLimit(), !this.includesUpperLimit(), other.upperLimit(), other.includesUpperLimit());
+        return newOfSameType(this.upperLimit(), !this.includesUpperLimit(),
+                other.upperLimit(), other.includesUpperLimit());
+    }
+
+    public Interval newOfSameType(Comparable lower, boolean isLowerClosed,
+            Comparable upper, boolean isUpperClosed) {
+        return new Interval(lower, isLowerClosed, upper, isUpperClosed);
+    }
+
+    // Warning: This method should generally be used for display
+    // purposes and interactions with closely coupled classes.
+    // Look for (or add) other methods to do computations.
+    public Comparable upperLimit() {
+        return upperLimit;
+    }
+
+    // Warning: This method should generally be used for display
+    // purposes and interactions with closely coupled classes.
+    // Look for (or add) other methods to do computations.
+    public Comparable lowerLimit() {
+        return lowerLimit;
+    }
+
+    // Warning: This method should generally be used for display
+    // purposes and interactions with closely coupled classes.
+    // Look for (or add) other methods to do computations.
+    public boolean includesLowerLimit() {
+        return includesLowerLimit;
+    }
+
+    // Warning: This method should generally be used for display
+    // purposes and interactions with closely coupled classes.
+    // Look for (or add) other methods to do computations.
+    public boolean includesUpperLimit() {
+        return includesUpperLimit;
     }
 
 }

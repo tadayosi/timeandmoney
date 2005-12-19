@@ -6,11 +6,12 @@
 
 package com.domainlanguage.time;
 
+import java.io.*;
 import java.util.*;
 
 import com.domainlanguage.util.*;
 
-public class CalendarDate extends CalendarInterval {
+public class CalendarDate implements Comparable, Serializable {
 	public static final CalendarDate FAR_FUTURE = from(9999, 9, 9);
 	public static final CalendarDate FAR_PAST = from(0001,1,1);
 
@@ -38,6 +39,9 @@ public class CalendarDate extends CalendarInterval {
 		calendar.setTimeZone(zone);
 		return CalendarDate._from(calendar);
 	}
+    public static CalendarDate date(int year, int month, int day) {
+        return from(year, month, day);
+    }
 
 	static CalendarDate _from(Calendar calendar) {
 		//Use timezone already set in calendar.
@@ -84,7 +88,7 @@ public class CalendarDate extends CalendarInterval {
 			if (this.isAfter(otherDate)) return 1;
 			return 0;
 		}
-		return super.compareTo(other);
+		return -1;
 	}
 
 	public boolean equals(Object object) {
@@ -188,17 +192,15 @@ public class CalendarDate extends CalendarInterval {
 		return CalendarInterval.inclusive(this, otherDate);
 	}
 
-	public Comparable upperLimit() {
-		return this;
-	}
-
-	public Comparable lowerLimit() {
-		return this;
-	}
-
 	public int dayOfWeek() {
 		Calendar calendar = asJavaCalendarUniversalZoneMidnight();
 		return calendar.get(Calendar.DAY_OF_WEEK);
 	}
+    public CalendarInterval asCalendarInterval() {
+        return CalendarInterval.inclusive(this,this);
+    }
+    public boolean covers(CalendarDate another) {
+        return asCalendarInterval().covers(another);
+    }
 	
 }

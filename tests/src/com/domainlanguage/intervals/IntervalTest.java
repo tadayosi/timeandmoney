@@ -59,11 +59,11 @@ public class IntervalTest extends TestCase {
     //	}
     //
     public void testAbstractCreation() {
-        Interval concrete = new ConcreteInterval(new Integer(1), true, new Integer(3), true);
+        Interval concrete = new Interval(new Integer(1), true, new Integer(3), true);
         Interval newInterval = concrete.newOfSameType(new Integer(1), false, new Integer(4), false);
-        assertTrue(TypeCheck.is(newInterval, ConcreteInterval.class));
+        assertTrue(TypeCheck.is(newInterval, Interval.class));
 
-        Interval expected = new ConcreteInterval(new Integer(1), false, new Integer(4), false);
+        Interval expected = new Interval(new Integer(1), false, new Integer(4), false);
         assertEquals(expected, newInterval);
     }
 

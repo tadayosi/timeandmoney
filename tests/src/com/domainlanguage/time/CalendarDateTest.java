@@ -107,7 +107,7 @@ public class CalendarDateTest extends TestCase {
     }
 
     public void testToString() {
-        CalendarDate date = CalendarInterval.date(2004, 5, 28);
+        CalendarDate date = CalendarDate.date(2004, 5, 28);
         assertEquals("2004-5-28", date.toString());
     }
     
