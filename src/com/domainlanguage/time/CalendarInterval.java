@@ -55,14 +55,14 @@ public class CalendarInterval implements Comparable, Serializable {
     }
 
     CalendarInterval(Interval anInterval) {
-        Interval toUse = anInterval;
+        /*Interval toUse = anInterval;
         if (!anInterval.includesUpperLimit()) {
             CalendarDate upper = (CalendarDate) anInterval.upperLimit();
             upper = upper.previousDay();
             toUse = new Interval(anInterval.lowerLimit(), anInterval
                     .includesLowerLimit(), upper, true);
-        }
-        enclosedInterval = toUse;
+        }*/
+        enclosedInterval = anInterval;
     }
 
     public CalendarDate start() {
