@@ -169,7 +169,7 @@ public class CalendarInterval implements Comparable, Serializable {
     }
 
     public boolean covers(CalendarDate aDate) {
-        return covers(aDate.asCalendarInterval());
+        return enclosedInterval.includes(aDate);
     }
 
     public List complementRelativeTo(CalendarInterval other) {

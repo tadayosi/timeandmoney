@@ -113,7 +113,6 @@ public class CalendarIntervalTest extends TestCase {
         assertEquals(1, complementList.size());
         
         CalendarInterval complement = (CalendarInterval) complementList.iterator().next();
-        //This is the original test code...is there a subtle bug here?
         //assertTrue(complement.isClosed());
         //assertEquals(may1.asCalendarInterval(), complement);
         assertFalse(complement.isClosed());
