@@ -123,11 +123,8 @@ public class CalendarIntervalTest extends TestCase {
 
     public void testSingleDateCalendarIntervalCompare() {
         CalendarInterval may1_may1 = CalendarInterval.inclusive(may1, may1);
-        assertEquals(may1.asCalendarInterval(), may1_may1);
-        assertEquals(0, may1.asCalendarInterval().compareTo(may1_may1));
-        assertEquals(0, may1_may1.compareTo(may1.asCalendarInterval()));
         CalendarInterval may1_may2 = CalendarInterval.inclusive(may1, may2);
-        assertTrue(may1.asCalendarInterval().compareTo(may1_may2) < 0);
-        assertTrue(may1_may2.compareTo(may1.asCalendarInterval()) > 0);
+        assertTrue(may1_may1.compareTo(may1_may2) < 0);
+        assertTrue(may1_may2.compareTo(may1_may1) > 0);
     }
 }

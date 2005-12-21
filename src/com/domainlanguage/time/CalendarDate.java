@@ -196,10 +196,7 @@ public class CalendarDate implements Comparable, Serializable {
 		Calendar calendar = asJavaCalendarUniversalZoneMidnight();
 		return calendar.get(Calendar.DAY_OF_WEEK);
 	}
-    public boolean covers(CalendarDate another) {
-        return equals(another);
-    }
-    public CalendarInterval asCalendarInterval() {
-        return CalendarInterval.inclusive(this,this);
-    }
+    //public CalendarInterval asCalendarInterval() {
+    //    return CalendarInterval.inclusive(this,this);
+    //}
 }
