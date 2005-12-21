@@ -11,7 +11,7 @@ import java.util.*;
 import com.domainlanguage.time.*;
 
 public class SystemClock {
-
+    
     public static TimeSource timeSource() {
         return new TimeSource() {
             public TimePoint now() {
@@ -23,5 +23,4 @@ public class SystemClock {
     public static TimePoint now() {
         return TimePoint.from(new Date());
     }
-
 }
